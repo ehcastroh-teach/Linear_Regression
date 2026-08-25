@@ -18,9 +18,10 @@ This repository walks through linear regression from first principles, building 
 
 | File | Description |
 |------|-------------|
-| `hw_linear_regression.ipynb` | Guided notebook covering Parts 1-3: summary statistics, single-variable regression, and multi-variable regression |
+| `linear_regression_lesson.ipynb` | Lesson notebook with full worked solutions covering Parts 1-3: summary statistics, single-variable regression, and multi-variable regression |
+| `linear_regression_homework.ipynb` | Homework notebook with `...` placeholders for student completion, same structure as the lesson |
 | `real_estate_data.csv` | 414 real estate transactions with house age, MRT distance, convenience store count, latitude, longitude, and price per unit area |
-| `requirements.txt` | Python package dependencies needed to run the notebook |
+| `requirements.txt` | Python package dependencies needed to run the notebooks |
 
 ### Dataset columns
 
@@ -108,7 +109,11 @@ cd Linear_Regression
 pip install -r requirements.txt
 
 # Launch the notebook
-jupyter notebook hw_linear_regression.ipynb
+# Open the lesson notebook (worked solutions)
+jupyter notebook linear_regression_lesson.ipynb
+
+# Or open the homework notebook (fill in the blanks)
+jupyter notebook linear_regression_homework.ipynb
 ```
 
 Work through the notebook top to bottom. Each question builds on the previous one. Fill in the `...` placeholders with your own code and run each cell to check your result.
