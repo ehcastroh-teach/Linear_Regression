@@ -18,12 +18,12 @@ This repository walks through linear regression from first principles, building 
 
 | File | Description |
 |------|-------------|
-| `linear_regression_lesson.ipynb` | Lesson notebook with full worked solutions covering Parts 1-3: summary statistics, single-variable regression, and multi-variable regression |
-| `linear_regression_homework.ipynb` | Homework notebook with `...` placeholders for student completion, same structure as the lesson |
-| `real_estate_data.csv` | 414 real estate transactions with house age, MRT distance, convenience store count, latitude, longitude, and price per unit area |
+| `linear_regression_lesson.ipynb` | Lesson notebook with full worked solutions covering Parts 0-2: summary statistics, single-variable regression, and multi-variable regression using a Taiwanese real estate dataset |
+| `linear_regression_homework.ipynb` | Homework notebook with `...` placeholders for student completion, applied to the California housing dataset from scikit-learn |
+| `real_estate_data.csv` | 414 real estate transactions with house age, MRT distance, convenience store count, latitude, longitude, and price per unit area (used in the lesson) |
 | `requirements.txt` | Python package dependencies needed to run the notebooks |
 
-### Dataset columns
+### Dataset columns (lesson notebook - real_estate_data.csv)
 
 | Column | Meaning |
 |--------|---------|
@@ -34,43 +34,50 @@ This repository walks through linear regression from first principles, building 
 | `X5 longitude` | Longitude coordinate |
 | `Y house price of unit area` | House price per unit area (target variable) |
 
+### Dataset columns (homework notebook - California housing, sklearn built-in)
+
+| Column | Meaning |
+|--------|---------|
+| `MedInc` | Median income of block group (in tens of thousands of USD) |
+| `HouseAge` | Median house age of block group in years |
+| `AveRooms` | Average number of rooms per household |
+| `MedHouseVal` | Median house value (target, in hundreds of thousands of USD) |
+
 ---
 
 ## Workflow Diagram
 
 ```
-real_estate_data.csv
-        |
-        v
-[ Load with pandas ]
-        |
-   -----+-------------------------------
-   |                                   |
-   v                                   v
-Part 1: Toy dataset              Part 2: Single-variable
-(9 points, by hand)              predictor on house age
-  E[X], E[Y], Cov, E[X^2]         E[X], E[Y], Var(X), Cov(X,Y)
-                                     slope = Cov / Var
-                                     predictor(age) -> price
-                                          |
+Lesson: real_estate_data.csv          Homework: sklearn fetch_california_housing()
+        |                                         |
+        v                                         v
+[ Load with pandas ]                    [ Load with sklearn ]
+        |                                         |
+   -----+-------------------------------     -----+-------------------------------
+   |                                   |    |                                    |
+   v                                   v    v                                    v
+Part 0: Toy dataset              Part 1: Single-variable      Sec 1: Summary stats
+(9 points, inline)               predictor on house age        on median income
+  E[X], E[Y], Cov, E[X^2]         slope = Cov / Var
+                                     predictor(age) -> price   Sec 2: Single-variable
+                                          |                     predictor on income
                                           v
-                                  Part 3: Multi-variable predictor
-                                  X = [age, MRT_dist, stores]
-                                  W = (X^T X)^{-1} X^T Y
-                                  predictor(age, dist, stores) -> price
+                                  Part 2: Multi-variable       Sec 3: Multi-variable
+                                  predictor via normal eq       predictor via normal eq
+                                  W = (X^T X)^{-1} X^T Y       (income, rooms, age)
 ```
 
 ---
 
 ## Step-by-Step Walkthrough
 
-### Part 1 - Summary statistics from scratch
+### Part 0 - Summary statistics from scratch
 
 Before reaching for a library, you compute the building blocks by hand on a 9-point toy dataset. This forces familiarity with what `np.mean`, `np.cov`, and `np.var` actually calculate, which matters when interpreting model output later.
 
 The key quantity here is `Cov(X, Y)` - it captures how much X and Y move together. If it is positive, higher X tends to mean higher Y. If negative, they move in opposite directions. Linear regression is essentially a normalized version of this idea.
 
-### Part 2 - Single-variable predictor
+### Part 1 - Single-variable predictor
 
 With the real estate dataset loaded, you predict house price from house age alone. The formulas are:
 
@@ -82,9 +89,9 @@ predictor(x) = intercept + slope * x
 
 This is the closed-form solution for simple linear regression. No gradient descent, no optimization library - just two statistics from the data. You derive the slope from your covariance and variance answers, which means any error in those carries forward. This is intentional: it shows that a regression model is only as reliable as the summary statistics feeding it.
 
-### Part 3 - Multi-variable predictor via the normal equation
+### Part 2 - Multi-variable predictor via the normal equation
 
-One variable is rarely enough. Part 3 adds MRT distance and convenience store count. With multiple inputs, the scalar formula no longer applies - you need matrix algebra.
+One variable is rarely enough. Part 2 adds MRT distance and convenience store count. With multiple inputs, the scalar formula no longer applies - you need matrix algebra.
 
 The normal equation solves for the weight vector W that minimizes squared prediction error:
 
@@ -93,8 +100,6 @@ W = (X^T X)^{-1} X^T Y
 ```
 
 This is the exact, analytic solution. You build X as a matrix where each row is one house and each column is one feature, then apply the formula with `np.linalg.inv` and `.dot`. The result is a vector of three weights - one per feature - telling you how much each input contributes to the predicted price.
-
-The predictor function in Question 3b then unpacks those weights and computes a price for any new combination of inputs.
 
 ---
 
@@ -108,8 +113,7 @@ cd Linear_Regression
 # Install dependencies
 pip install -r requirements.txt
 
-# Launch the notebook
-# Open the lesson notebook (worked solutions)
+# Launch the lesson notebook (worked solutions)
 jupyter notebook linear_regression_lesson.ipynb
 
 # Or open the homework notebook (fill in the blanks)
@@ -137,6 +141,7 @@ Work through the notebook top to bottom. Each question builds on the previous on
 | Least squares | The objective of minimizing the sum of squared residuals across all data points |
 | Transpose (X^T) | Flipping a matrix so rows become columns; required to form X^T X in the normal equation |
 | Matrix inverse | The matrix equivalent of division; (X^T X)^{-1} exists when the columns of X are linearly independent |
+| Design matrix | The matrix X where each row is one observation and each column is one input feature |
 
 ---
 
@@ -146,12 +151,15 @@ Work through the notebook top to bottom. Each question builds on the previous on
 - "The Elements of Statistical Learning" - Chapter 3 (linear methods for regression)
 - "Python for Data Analysis" - Chapter on NumPy and array operations
 - NumPy linear algebra documentation: `numpy.linalg` module reference
+- scikit-learn California housing dataset documentation: `sklearn.datasets.fetch_california_housing`
 
 ---
 
 ## Credits and Acknowledgements
 
-Dataset derived from a publicly available real estate transaction dataset covering transactions in the New Taipei City area of Taiwan.
+Lesson dataset derived from a publicly available real estate transaction dataset covering transactions in the New Taipei City area of Taiwan.
+
+Homework dataset: California housing data from the StatLib repository, included with scikit-learn. Originally published in Pace, R.K. and Barry, R. (1997) "Sparse Spatial Autoregressions", Statistics and Probability Letters, 33(3), 291-297.
 
 ---
 
