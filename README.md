@@ -123,20 +123,27 @@ Working through the homework without the lesson solution visible confirms that t
 
 ## How to Run
 
+Prerequisites: [Nix](https://nixos.org/download) with flakes enabled.
+
+This repo's Python environment is fully project-local - a `flake.nix` devShell provides Python and `uv`, and `uv` installs every dependency pinned in `pyproject.toml`/`uv.lock` into a `.venv` inside this directory. Nothing is installed system-wide, and nothing here needs to be added to `home.nix` or `configuration.nix`.
+
 ```bash
 # Clone the repo
 git clone https://github.com/ehcastroh-teach/Linear_Regression.git
 cd Linear_Regression
 
-# Install dependencies
-pip install -r requirements.txt
+# Enter the project's dev shell - this also runs `uv sync` automatically
+# the first time, creating .venv with every pinned dependency installed
+nix develop
 
 # Launch the lesson notebook (fully worked)
-jupyter notebook linear_regression_lesson.ipynb
+uv run jupyter notebook linear_regression_lesson.ipynb
 
 # Or open the homework notebook (fill in the ... placeholders)
-jupyter notebook linear_regression_homework.ipynb
+uv run jupyter notebook linear_regression_homework.ipynb
 ```
+
+If you don't use Nix, any Python 3.12+ environment with `uv` installed works the same way: run `uv sync` in place of `nix develop` and use the `uv run ...` commands above unchanged.
 
 Work through each notebook from top to bottom. Each question builds on the variables computed in the previous one - for example, the slope in Part 1 uses the covariance and variance you computed in Part 0. Fill in `...` placeholders with your own code and run the cell to check the result. The concept checks at the end of each part are optional extensions that go slightly beyond the guided questions.
 
